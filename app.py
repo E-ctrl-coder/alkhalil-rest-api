@@ -1,7 +1,18 @@
 from flask import Flask, request, jsonify
-from aratools_alkhalil.helper import analyze_with_alkhalil
 
 app = Flask(__name__)
+
+def stub_parse(word: str) -> list[dict]:
+    """
+    Temporary stub that returns one fake hybrid parse.
+    """
+    return [{
+        "source":           "hybrid_alkhalil",
+        "segments":         [{"text": word, "type": "root"}],
+        "pattern":          "فعل",
+        "root_occurrences": 0,
+        "example_verses":   []
+    }]
 
 @app.route('/analyze', methods=['GET', 'POST'])
 def analyze():
@@ -9,18 +20,13 @@ def analyze():
     if request.method == 'GET':
         w = request.args.get('word', '').strip()
     else:
-        j = request.get_json(silent=True) or {}
-        w = j.get('word', '').strip()
+        w = (request.get_json(silent=True) or {}).get('word', '').strip()
 
     if not w:
         return jsonify(error="Empty word"), 400
 
-    try:
-        # call into your helper’s logic
-        parses = analyze_with_alkhalil(w)
-        return jsonify(parses), 200
-    except Exception as e:
-        return jsonify(error=str(e)), 500
+    # <<< STUBBED RESPONSE >>>
+    return jsonify(stub_parse(w)), 200
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
